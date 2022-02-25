@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from metodos import metodos  as m
+from metodos import metodos as m
 
 app = FastAPI(title="API", version="1.0.0")
 
@@ -32,4 +32,19 @@ def getDS():
 @app.get("/desercion_media")
 def getMedia(): 
     data = m.desercion_media()
+    return data
+
+@app.get("/participacion")
+def getParticipacion(): 
+    data = m.Punto1    
+    return data.to_dict(orient="index")
+
+@app.get("/cobertura")
+def getCobertura(): 
+    data = m.cobertura()    
+    return data.to_dict(orient="index")
+
+@app.get("/sedes_conectadas")
+def getSedes(): 
+    data = m.sedes_conectadas()    
     return data

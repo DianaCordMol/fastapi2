@@ -1,13 +1,6 @@
 import pandas as pd
-import numpy as np
-import os
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
-class metodos:
-    
+class metodos:    
 
     def prepararDatos():     
         data = pd.read_csv("datos.csv")
@@ -46,10 +39,49 @@ class metodos:
 
     def desercion_media():
         data = pd.read_csv("datos.csv")
-        # data.dropna(axis = 0, how = "all", inplace = True) 
+        data.dropna(axis = 0, how = "all", inplace = True) 
         datos_agrupados_departamento_dm = data.groupby(["AÑO","DEPARTAMENTO"])['DESERCIÓN_MEDIA'].mean().reset_index().copy()
         datos_agrupados_departamento_dm = datos_agrupados_departamento_dm.astype(str)       
         return datos_agrupados_departamento_dm.to_dict(orient="records")
+
+    def cobertura():
+        data = pd.read_csv("datos.csv")
+        data.dropna(axis = 0, how = "all", inplace = True) 
+        Fechas2 = []
+        for i in data["AÑO"]:
+            Fechas2.append( str(i)[:4] + "-01" )
+
+        Fechas2 = pd.to_datetime(Fechas2)
+        data.set_index(Fechas2, inplace = True)
+        data_Cobertura = data["COBERTURA_NETA"].resample("Y").mean()
+        data_Matriculacion = data["TASA_MATRICULACIÓN_5_16"].resample("Y").mean()
+        Resumen = pd.concat([data_Cobertura, data_Matriculacion], axis = "columns", keys = ["Cobertura Neta", "Tasa de Matriculación"])
+        return Resumen
+    
+    def sedes_conectadas():
+        data = pd.read_csv("datos.csv")
+        data.dropna(axis = 0, how = "all", inplace = True) 
+        sedes = data.groupby(["DEPARTAMENTO"])['SEDES_CONECTADAS_A_INTERNET'].mean().reset_index().copy()
+        sedes = sedes.astype(str)       
+        return sedes.to_dict(orient="records")
+
+
+    def Participacion(serie):
+        Participacion = serie.sum()/len(serie)*0.01
+        return(Participacion)
+        
+        
+    data = pd.read_csv("datos.csv")
+    data.dropna(axis = 0, how = "all", inplace = True) 
+    Departamentos = ['Cauca', 'Córdoba', 'Guainía', 'Guaviare', 'Vaupés', 'Vichada', 'Bogotá, D.C.']
+    Variables = ['COBERTURA_NETA', 'TASA_MATRICULACIÓN_5_16']
+    Punto1 = data.pivot_table(index = ["DEPARTAMENTO"],
+                        values = Variables, aggfunc = 
+                        {'COBERTURA_NETA' : Participacion,
+                        'TASA_MATRICULACIÓN_5_16' : Participacion}).loc[Departamentos]
+
+     
+        
 
     
     
